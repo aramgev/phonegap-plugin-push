@@ -12,8 +12,8 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -114,6 +114,10 @@ public class PushPlugin extends CordovaPlugin implements PushConstants {
           .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE).build();
       if (SOUND_RINGTONE.equals(sound)) {
         mChannel.setSound(android.provider.Settings.System.DEFAULT_RINGTONE_URI, audioAttributes);
+      } else if (sound != null && sound.isEmpty()) {
+        // Disable sound for this notification channel if an empty string is passed.
+        // https://stackoverflow.com/a/47144981/6194193
+        mChannel.setSound(null, null);
       } else if (sound != null && !sound.contentEquals(SOUND_DEFAULT)) {
         Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + packageName + "/raw/" + sound);
         mChannel.setSound(soundUri, audioAttributes);
